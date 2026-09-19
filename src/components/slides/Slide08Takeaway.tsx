@@ -56,14 +56,16 @@ export default function Slide08Takeaway() {
               <span style={{ flex: 1, fontSize: '0.72rem', color: '#B0C0D0', lineHeight: 1.35 }}>
                 {item.question}
               </span>
-              <div style={{ display: 'flex', gap: '0.25rem', flexShrink: 0 }}>
+              <div style={{ display: 'flex', gap: '0.3rem', flexShrink: 0 }}>
                 {(['yes', 'partial', 'no'] as const).map(r => (
                   <button
                     key={r}
                     className={`btn btn-sm ${ratings[item.conditionId] === r ? (r === 'yes' ? 'btn-teal' : r === 'partial' ? 'btn-amber' : '') : 'btn-ghost'}`}
                     style={{
-                      padding: '0.2rem 0.4rem',
-                      fontSize: '0.6rem',
+                      padding: '0.4rem 0.6rem',
+                      fontSize: '0.75rem',
+                      minWidth: '2.2rem',
+                      minHeight: '2.2rem',
                       ...(ratings[item.conditionId] === r && r === 'no' ? { background: 'rgba(239,68,68,0.2)', color: '#EF4444', border: 'none' } : {}),
                     }}
                     onClick={() => toggleRating(item.conditionId, r)}

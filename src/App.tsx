@@ -22,6 +22,8 @@ export default function App() {
   const [passwordError, setPasswordError] = useState(false);
   const clickCount = useRef(0);
   const clickTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
 
   const goNext = useCallback(() => {
     setCurrent(prev => Math.min(prev + 1, TOTAL_SLIDES - 1));
@@ -41,6 +43,23 @@ export default function App() {
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
   }, [goNext, goPrev, showPasswordModal, showInstructorPanel]);
+
+  // Touch swipe navigation
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (showPasswordModal || showInstructorPanel) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartX.current;
+    const deltaY = e.changedTouches[0].clientY - touchStartY.current;
+    // Only trigger if horizontal swipe is dominant (>50px and more horizontal than vertical)
+    if (Math.abs(deltaX) > 50 && Math.abs(deltaX) > Math.abs(deltaY)) {
+      if (deltaX < 0) goNext();  // swipe left = next
+      else goPrev();              // swipe right = previous
+    }
+  };
 
   // Hidden instructor trigger: 5 rapid clicks on slide number
   const handleSlideNumberClick = () => {
@@ -78,7 +97,7 @@ export default function App() {
 
   return (
     <>
-      <div className="slide-shell">
+      <div className="slide-shell" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
         <div className="slide-content fade-in" key={current}>
           {slides[current]}
         </div>
